@@ -47,7 +47,6 @@ final class ConfigurationTest extends TestCase
                 'configurations' => [
                     'default' => [
                         'foo' => 'hello',
-                        'bar' => 123,
                     ],
                 ],
             ],
@@ -118,20 +117,6 @@ final class ConfigurationTest extends TestCase
         ]);
     }
 
-    public function testMissingOptions(): void
-    {
-        $this->expectException(InvalidConfigurationException::class);
-        $this->expectExceptionMessage('Invalid configuration for path "siganushka_api_factory.test" (The required option "foo" is missing.)');
-
-        $this->processor->processConfiguration($this->configuration, [
-            [
-                'test' => [
-                    'enabled' => true,
-                ],
-            ],
-        ]);
-    }
-
     public function testDefaultConfigurationInvalid(): void
     {
         $this->expectException(InvalidConfigurationException::class);
@@ -174,7 +159,7 @@ final class ConfigurationTest extends TestCase
     public function testConfigurationClassInvalid(): void
     {
         $this->expectException(\UnexpectedValueException::class);
-        $this->expectExceptionMessage(sprintf('Expected argument of type "%s", "stdClass" given', AbstractConfiguration::class));
+        $this->expectExceptionMessage(sprintf('The configuration class expected of type "%s", "%s" given', AbstractConfiguration::class, \stdClass::class));
 
         $packages = [
             'vendor/test' => \stdClass::class,

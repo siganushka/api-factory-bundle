@@ -10,6 +10,7 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class Configuration implements ConfigurationInterface
 {
@@ -32,28 +33,29 @@ class Configuration implements ConfigurationInterface
             }
 
             if (!is_subclass_of($configurationClass, AbstractConfiguration::class)) {
-                throw new \UnexpectedValueException(sprintf('Expected argument of type "%s", "%s" given', AbstractConfiguration::class, $configurationClass));
+                throw new \UnexpectedValueException(sprintf('The configuration class expected of type "%s", "%s" given.', AbstractConfiguration::class, $configurationClass));
             }
 
             $packageAlias = static::normalizePackageAlias($packageName);
-            $this->createMultipleConfigsNode($rootNode, $packageAlias, sprintf('%s configuration', ucfirst($packageAlias)))
+            $packageNode = $this->createMultipleConfigsNode($rootNode, $packageAlias, sprintf('%s configuration', ucfirst($packageAlias)))
                 ->children()
                     ->arrayNode('configurations')
                         ->useAttributeAsKey('name')
                         ->arrayPrototype()
-                        ->ignoreExtraKeys(false)
-                        ->beforeNormalization()
-                            ->always(static function (array $v) use ($configurationClass, $packageAlias) {
-                                try {
-                                    $configuration = new $configurationClass($v);
-                                } catch (\Throwable $th) {
-                                    throw new InvalidConfigurationException(sprintf('Invalid configuration for path "siganushka_api_factory.%s" (%s)', $packageAlias, $th->getMessage()));
-                                }
-
-                                return $configuration->toArray();
-                            })
-                        ->end()
+                        ->children()
             ;
+
+            $resolver = new OptionsResolver();
+            $configurationClass::configureOptions($resolver);
+
+            foreach ($resolver->getDefinedOptions() as $option) {
+                $optionNode = $packageNode->variableNode($option);
+                if ($resolver->isRequired($option) && !$resolver->hasDefault($option)) {
+                    $optionNode->isRequired();
+                }
+            }
+
+            unset($resolver, $configurationClass);
         }
 
         return $treeBuilder;

@@ -9,7 +9,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TestConfiguration extends AbstractConfiguration
 {
-    protected function configureOptions(OptionsResolver $resolver): void
+    public static function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
             ->define('foo')
