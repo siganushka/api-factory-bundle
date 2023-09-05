@@ -13,7 +13,7 @@ use Siganushka\ApiFactoryBundle\Tests\Fixtures\TestConfiguration;
 use Symfony\Component\DependencyInjection\Compiler\ResolveChildDefinitionsPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-class SiganushkaApiClientExtensionTest extends TestCase
+class SiganushkaApiFactoryExtensionTest extends TestCase
 {
     public function testDefaultConfig(): void
     {
