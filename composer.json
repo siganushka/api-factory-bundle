@@ -14,14 +14,16 @@
     "require": {
         "php": ">=7.4",
         "composer-runtime-api": ">=2.1",
-        "symfony/http-kernel": "^5.4|^6.0",
-        "symfony/dependency-injection": "^5.4|^6.0",
-        "symfony/config": "^5.4|^6.0",
+        "symfony/http-kernel": "^5.4|^6.0|^7.0",
+        "symfony/dependency-injection": "^5.4|^6.0|^7.0",
+        "symfony/config": "^5.4|^6.0|^7.0",
         "siganushka/api-factory": "dev-main"
     },
     "require-dev": {
-        "symfony/phpunit-bridge": "^6.0",
-        "vimeo/psalm": "^5.0"
+        "siganushka/github-api": "dev-main",
+        "siganushka/alipay-api": "dev-main",
+        "siganushka/wechat-api": "dev-main",
+        "siganushka/wxpay-api": "dev-main"
     },
     "autoload": {
         "psr-4": {
@@ -32,5 +34,12 @@
         "psr-4": {
             "Siganushka\\ApiFactoryBundle\\Tests\\": "tests/"
         }
+    },
+    "scripts": {
+        "tools:run": [
+            "tools/vendor/bin/php-cs-fixer fix",
+            "tools/vendor/bin/simple-phpunit --debug",
+            "tools/vendor/bin/phpstan"
+        ]
     }
 }

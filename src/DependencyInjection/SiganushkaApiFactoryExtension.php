@@ -10,8 +10,8 @@ use Siganushka\ApiFactory\ResolverInterface;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 class SiganushkaApiFactoryExtension extends Extension
 {
@@ -28,12 +28,12 @@ class SiganushkaApiFactoryExtension extends Extension
         foreach ($this->getAvailablePackages() as $packageName => $configurationClass) {
             $packageAlias = Configuration::normalizePackageAlias($packageName);
             if ($this->isConfigEnabled($container, $config[$packageAlias])) {
-                $defaultConfigurationId = sprintf('siganushka.api_factory.%s.configuration', $packageAlias);
+                $defaultConfigurationId = \sprintf('siganushka.api_factory.%s.configuration', $packageAlias);
                 foreach ($config[$packageAlias]['configurations'] as $configName => $configValue) {
-                    $configurationId = sprintf('%s_%s', $defaultConfigurationId, $configName);
+                    $configurationId = \sprintf('%s_%s', $defaultConfigurationId, $configName);
 
                     $container->register($configurationId, $configurationClass)->setArgument(0, $configValue);
-                    $container->registerAliasForArgument($configurationId, $configurationClass, sprintf('%sConfiguration', $configName));
+                    $container->registerAliasForArgument($configurationId, $configurationClass, \sprintf('%sConfiguration', $configName));
 
                     if ($config[$packageAlias]['default_configuration'] === $configName) {
                         $container->setAlias($defaultConfigurationId, $configurationId);

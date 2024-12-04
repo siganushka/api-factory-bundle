@@ -13,8 +13,8 @@ use Symfony\Component\Config\Definition\Processor;
 
 final class ConfigurationTest extends TestCase
 {
-    private ?Processor $processor = null;
-    private ?Configuration $configuration = null;
+    private Processor $processor;
+    private Configuration $configuration;
 
     protected function setUp(): void
     {
@@ -24,11 +24,6 @@ final class ConfigurationTest extends TestCase
 
         $this->processor = new Processor();
         $this->configuration = new Configuration($packages);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->processor = null;
     }
 
     public function testAll(): void
@@ -159,7 +154,7 @@ final class ConfigurationTest extends TestCase
     public function testConfigurationClassInvalid(): void
     {
         $this->expectException(\UnexpectedValueException::class);
-        $this->expectExceptionMessage(sprintf('The configuration class expected of type "%s", "%s" given', AbstractConfiguration::class, \stdClass::class));
+        $this->expectExceptionMessage(\sprintf('The configuration class expected of type "%s", "%s" given', AbstractConfiguration::class, \stdClass::class));
 
         $packages = [
             'vendor/test' => \stdClass::class,

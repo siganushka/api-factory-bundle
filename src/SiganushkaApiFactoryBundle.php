@@ -15,9 +15,6 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class SiganushkaApiFactoryBundle extends Bundle
 {
-    /**
-     * @psalm-suppress UndefinedClass
-     */
     public function build(ContainerBuilder $container): void
     {
         parent::build($container);
