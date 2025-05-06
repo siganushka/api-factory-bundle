@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Siganushka\ApiFactoryBundle\Tests\DependencyInjection;
 
 use PHPUnit\Framework\TestCase;
+use Siganushka\ApiFactory\ResolverConfigurator;
 use Siganushka\ApiFactory\ResolverConfiguratorInterface;
 use Siganushka\ApiFactory\ResolverExtensionInterface;
 use Siganushka\ApiFactory\ResolverInterface;
@@ -18,13 +19,11 @@ class SiganushkaApiFactoryExtensionTest extends TestCase
     public function testDefaultConfig(): void
     {
         $container = $this->createContainerWithConfig();
-        // dd($container->getServiceIds(), $container->getAliases());
 
-        static::assertTrue($container->hasDefinition('siganushka.api_factory.resolver_configurator'));
+        static::assertTrue($container->hasDefinition(ResolverConfigurator::class));
         static::assertTrue($container->hasAlias(ResolverConfiguratorInterface::class));
 
         $instanceof = $container->getAutoconfiguredInstanceof();
-        // dd($instanceof);
 
         static::assertArrayHasKey(ResolverInterface::class, $instanceof);
         static::assertArrayHasKey(ResolverExtensionInterface::class, $instanceof);
