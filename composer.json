@@ -17,13 +17,13 @@
         "symfony/http-kernel": "^5.4|^6.0|^7.0",
         "symfony/dependency-injection": "^5.4|^6.0|^7.0",
         "symfony/config": "^5.4|^6.0|^7.0",
-        "siganushka/api-factory": "dev-main"
+        "siganushka/api-factory": "^1.0"
     },
     "require-dev": {
-        "siganushka/github-api": "dev-main",
-        "siganushka/alipay-api": "dev-main",
-        "siganushka/wechat-api": "dev-main",
-        "siganushka/wxpay-api": "dev-main"
+        "siganushka/github-api": "^1.0",
+        "siganushka/alipay-api": "^1.0",
+        "siganushka/wechat-api": "^1.0",
+        "siganushka/wxpay-api": "^1.0"
     },
     "autoload": {
         "psr-4": {
