@@ -14,11 +14,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class Configuration implements ConfigurationInterface
 {
-    private array $packages = [];
-
-    public function __construct(array $packages = [])
+    public function __construct(private readonly array $packages = [])
     {
-        $this->packages = $packages;
     }
 
     public function getConfigTreeBuilder(): TreeBuilder
