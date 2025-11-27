@@ -18,7 +18,7 @@ class ResolverConfiguratorPass implements CompilerPassInterface
 
         $definition = $container->findDefinition(ResolverConfigurator::class);
 
-        $taggedServices = $container->findTaggedServiceIds('siganushka.api_factory.resolver');
+        $taggedServices = $container->findTaggedServiceIds('siganushka_api_factory.resolver');
         foreach ($taggedServices as $id => $tags) {
             $container->findDefinition($id)->setConfigurator([$definition, 'configure']);
         }

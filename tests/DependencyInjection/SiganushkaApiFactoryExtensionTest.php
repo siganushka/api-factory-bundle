@@ -27,8 +27,8 @@ class SiganushkaApiFactoryExtensionTest extends TestCase
 
         static::assertArrayHasKey(ResolverInterface::class, $instanceof);
         static::assertArrayHasKey(ResolverExtensionInterface::class, $instanceof);
-        static::assertTrue($instanceof[ResolverInterface::class]->hasTag('siganushka.api_factory.resolver'));
-        static::assertTrue($instanceof[ResolverExtensionInterface::class]->hasTag('siganushka.api_factory.resolver_extension'));
+        static::assertTrue($instanceof[ResolverInterface::class]->hasTag('siganushka_api_factory.resolver'));
+        static::assertTrue($instanceof[ResolverExtensionInterface::class]->hasTag('siganushka_api_factory.resolver_extension'));
     }
 
     public function testCustomConfig(): void
@@ -39,13 +39,13 @@ class SiganushkaApiFactoryExtensionTest extends TestCase
             ],
         ]);
 
-        static::assertTrue($container->hasAlias('siganushka.api_factory.test.configuration'));
+        static::assertTrue($container->hasAlias('siganushka_api_factory.test.configuration'));
         static::assertTrue($container->hasAlias(TestConfiguration::class));
 
-        static::assertSame('siganushka.api_factory.test.configuration_default', (string) $container->getAlias('siganushka.api_factory.test.configuration'));
-        static::assertSame('siganushka.api_factory.test.configuration_default', (string) $container->getAlias(TestConfiguration::class));
+        static::assertSame('siganushka_api_factory.test.configuration_default', (string) $container->getAlias('siganushka_api_factory.test.configuration'));
+        static::assertSame('siganushka_api_factory.test.configuration_default', (string) $container->getAlias(TestConfiguration::class));
 
-        static::assertTrue($container->hasDefinition('siganushka.api_factory.test.configuration_default'));
+        static::assertTrue($container->hasDefinition('siganushka_api_factory.test.configuration_default'));
         static::assertTrue($container->hasAlias(TestConfiguration::class.' $defaultConfiguration'));
 
         $container = $this->createContainerWithConfig([
@@ -66,14 +66,14 @@ class SiganushkaApiFactoryExtensionTest extends TestCase
             ],
         ]);
 
-        static::assertTrue($container->hasAlias('siganushka.api_factory.test.configuration'));
+        static::assertTrue($container->hasAlias('siganushka_api_factory.test.configuration'));
         static::assertTrue($container->hasAlias(TestConfiguration::class));
 
-        static::assertSame('siganushka.api_factory.test.configuration_test2', (string) $container->getAlias('siganushka.api_factory.test.configuration'));
-        static::assertSame('siganushka.api_factory.test.configuration_test2', (string) $container->getAlias(TestConfiguration::class));
+        static::assertSame('siganushka_api_factory.test.configuration_test2', (string) $container->getAlias('siganushka_api_factory.test.configuration'));
+        static::assertSame('siganushka_api_factory.test.configuration_test2', (string) $container->getAlias(TestConfiguration::class));
 
-        static::assertTrue($container->hasDefinition('siganushka.api_factory.test.configuration_test1'));
-        static::assertTrue($container->hasDefinition('siganushka.api_factory.test.configuration_test2'));
+        static::assertTrue($container->hasDefinition('siganushka_api_factory.test.configuration_test1'));
+        static::assertTrue($container->hasDefinition('siganushka_api_factory.test.configuration_test2'));
 
         static::assertTrue($container->hasAlias(TestConfiguration::class.' $test1Configuration'));
         static::assertTrue($container->hasAlias(TestConfiguration::class.' $test2Configuration'));

@@ -10,7 +10,7 @@ use Siganushka\ApiFactory\ResolverConfiguratorInterface;
 return static function (ContainerConfigurator $container): void {
     $container->services()
         ->set(ResolverConfigurator::class)
-            ->arg(0, tagged_iterator('siganushka.api_factory.resolver_extension'))
+            ->arg(0, tagged_iterator('siganushka_api_factory.resolver_extension'))
             ->alias(ResolverConfiguratorInterface::class, ResolverConfigurator::class)
     ;
 };

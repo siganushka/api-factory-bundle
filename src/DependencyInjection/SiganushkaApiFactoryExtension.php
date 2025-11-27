@@ -28,7 +28,7 @@ class SiganushkaApiFactoryExtension extends Extension
         foreach ($this->getAvailablePackages() as $packageName => $configurationClass) {
             $packageAlias = Configuration::normalizePackageAlias($packageName);
             if ($this->isConfigEnabled($container, $config[$packageAlias])) {
-                $defaultConfigurationId = \sprintf('siganushka.api_factory.%s.configuration', $packageAlias);
+                $defaultConfigurationId = \sprintf('siganushka_api_factory.%s.configuration', $packageAlias);
                 foreach ($config[$packageAlias]['configurations'] as $configName => $configValue) {
                     $configurationId = \sprintf('%s_%s', $defaultConfigurationId, $configName);
 
@@ -54,11 +54,11 @@ class SiganushkaApiFactoryExtension extends Extension
         }
 
         $container->registerForAutoconfiguration(ResolverInterface::class)
-            ->addTag('siganushka.api_factory.resolver')
+            ->addTag('siganushka_api_factory.resolver')
         ;
 
         $container->registerForAutoconfiguration(ResolverExtensionInterface::class)
-            ->addTag('siganushka.api_factory.resolver_extension')
+            ->addTag('siganushka_api_factory.resolver_extension')
         ;
     }
 
