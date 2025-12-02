@@ -7,6 +7,9 @@ namespace Siganushka\ApiFactoryBundle\Tests\Fixtures;
 use Siganushka\ApiFactory\AbstractConfiguration;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * @extends AbstractConfiguration<array{ foo: string, bar: int, baz?: bool }>
+ */
 class TestConfiguration extends AbstractConfiguration
 {
     public static function configureOptions(OptionsResolver $resolver): void

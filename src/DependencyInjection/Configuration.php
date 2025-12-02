@@ -6,6 +6,7 @@ namespace Siganushka\ApiFactoryBundle\DependencyInjection;
 
 use Siganushka\ApiFactory\AbstractConfiguration;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use Symfony\Component\Config\Definition\Builder\NodeParentInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -18,10 +19,12 @@ class Configuration implements ConfigurationInterface
     {
     }
 
+    /**
+     * @return TreeBuilder<'array'>
+     */
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('siganushka_api_factory');
-        /** @var ArrayNodeDefinition */
         $rootNode = $treeBuilder->getRootNode();
 
         foreach ($this->packages as $packageName => $configurationClass) {
@@ -59,9 +62,13 @@ class Configuration implements ConfigurationInterface
         return $treeBuilder;
     }
 
+    /**
+     * @param ArrayNodeDefinition<NodeParentInterface> $rootNode
+     *
+     * @return ArrayNodeDefinition<NodeParentInterface>
+     */
     private function createMultipleConfigsNode(ArrayNodeDefinition $rootNode, string $nodeName, string $nodeInfo): ArrayNodeDefinition
     {
-        /* @phpstan-ignore method.notFound */
         return $rootNode
             ->children()
                 ->arrayNode($nodeName)
@@ -89,7 +96,7 @@ class Configuration implements ConfigurationInterface
                     })
                 ->end()
                 ->beforeNormalization()
-                    ->ifTrue(static fn ($v): bool => \is_array($v) && isset($v['configurations']) && 1 === \count($v['configurations']) && !isset($v['default_configuration']))
+                    ->ifTrue(static fn ($v): bool => \is_array($v) && \is_array($v['configurations']) && 1 === \count($v['configurations']) && !isset($v['default_configuration']))
                     ->then(static function (array $v): array {
                         $v['default_configuration'] = key($v['configurations']);
 
