@@ -2,6 +2,7 @@
 
 $finder = (new PhpCsFixer\Finder())
     ->in([
+        __DIR__.'/config',
         __DIR__.'/src',
         __DIR__.'/tests',
     ])
@@ -10,8 +11,8 @@ $finder = (new PhpCsFixer\Finder())
 return (new PhpCsFixer\Config())
     ->setParallelConfig(PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect())
     ->setRules([
-        '@PHP8x1Migration' => true,
-        '@PHP8x1Migration:risky' => true,
+        '@PHP8x2Migration' => true,
+        '@PHP8x2Migration:risky' => true,
         '@PHPUnit9x1Migration:risky' => true,
         '@Symfony' => true,
         '@Symfony:risky' => true,
