@@ -43,7 +43,7 @@ class SiganushkaApiFactoryExtension extends Extension
 
                 try {
                     $installPath = InstalledVersions::getInstallPath($packageName);
-                } catch (\Throwable $th) {
+                } catch (\Throwable) {
                     continue;
                 }
 
