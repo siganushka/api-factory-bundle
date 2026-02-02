@@ -28,7 +28,7 @@ class SiganushkaApiFactoryBundleTest extends TestCase
         static::assertCount(4, $extension->getPackages());
 
         $passConfig = $container->getCompilerPassConfig();
-        $filteredPasses = array_filter($passConfig->getBeforeOptimizationPasses(), fn (CompilerPassInterface $compiler) => ResolverConfiguratorPass::class === $compiler::class);
+        $filteredPasses = array_filter($passConfig->getBeforeOptimizationPasses(), static fn (CompilerPassInterface $compiler) => ResolverConfiguratorPass::class === $compiler::class);
 
         static::assertCount(1, $filteredPasses);
     }
