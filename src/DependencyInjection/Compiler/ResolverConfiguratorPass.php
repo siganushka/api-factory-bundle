@@ -10,6 +10,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class ResolverConfiguratorPass implements CompilerPassInterface
 {
+    public const RESOLVER_TAG = 'siganushka_api_factory.resolver';
+    public const RESOLVER_EXTENSION_TAG = 'siganushka_api_factory.resolver_extension';
+
     public function process(ContainerBuilder $container): void
     {
         if (!$container->hasDefinition(ResolverConfigurator::class)) {
@@ -17,9 +20,7 @@ class ResolverConfiguratorPass implements CompilerPassInterface
         }
 
         $definition = $container->findDefinition(ResolverConfigurator::class);
-
-        $taggedServices = $container->findTaggedServiceIds('siganushka_api_factory.resolver');
-        foreach ($taggedServices as $id => $tags) {
+        foreach ($container->findTaggedServiceIds(self::RESOLVER_TAG) as $id => $tags) {
             $container->findDefinition($id)->setConfigurator([$definition, 'configure']);
         }
     }

@@ -7,6 +7,7 @@ namespace Siganushka\ApiFactoryBundle\DependencyInjection;
 use Composer\InstalledVersions;
 use Siganushka\ApiFactory\ResolverExtensionInterface;
 use Siganushka\ApiFactory\ResolverInterface;
+use Siganushka\ApiFactoryBundle\DependencyInjection\Compiler\ResolverConfiguratorPass;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -54,11 +55,11 @@ class SiganushkaApiFactoryExtension extends Extension
         }
 
         $container->registerForAutoconfiguration(ResolverInterface::class)
-            ->addTag('siganushka_api_factory.resolver')
+            ->addTag(ResolverConfiguratorPass::RESOLVER_TAG)
         ;
 
         $container->registerForAutoconfiguration(ResolverExtensionInterface::class)
-            ->addTag('siganushka_api_factory.resolver_extension')
+            ->addTag(ResolverConfiguratorPass::RESOLVER_EXTENSION_TAG)
         ;
     }
 
