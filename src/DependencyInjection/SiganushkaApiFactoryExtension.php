@@ -28,29 +28,31 @@ class SiganushkaApiFactoryExtension extends Extension
 
         foreach ($this->getAvailablePackages() as $packageName => $configurationClass) {
             $packageAlias = Configuration::normalizePackageAlias($packageName);
-            if ($this->isConfigEnabled($container, $config[$packageAlias])) {
-                $defaultConfigurationId = \sprintf('siganushka_api_factory.%s.configuration', $packageAlias);
-                foreach ($config[$packageAlias]['configurations'] as $configName => $configValue) {
-                    $configurationId = \sprintf('%s_%s', $defaultConfigurationId, $configName);
+            if (!$this->isConfigEnabled($container, $config[$packageAlias])) {
+                continue;
+            }
 
-                    $container->register($configurationId, $configurationClass)->setArgument(0, $configValue);
-                    $container->registerAliasForArgument($configurationId, $configurationClass, \sprintf('%sConfiguration', $configName));
+            $defaultConfigurationId = \sprintf('siganushka_api_factory.%s.configuration', $packageAlias);
+            foreach ($config[$packageAlias]['configurations'] as $configName => $configValue) {
+                $configurationId = \sprintf('%s_%s', $defaultConfigurationId, $configName);
 
-                    if ($config[$packageAlias]['default_configuration'] === $configName) {
-                        $container->setAlias($defaultConfigurationId, $configurationId);
-                        $container->setAlias($configurationClass, $configurationId);
-                    }
+                $container->register($configurationId, $configurationClass)->setArgument(0, $configValue);
+                $container->registerAliasForArgument($configurationId, $configurationClass, \sprintf('%sConfiguration', $configName));
+
+                if ($config[$packageAlias]['default_configuration'] === $configName) {
+                    $container->setAlias($defaultConfigurationId, $configurationId);
+                    $container->setAlias($configurationClass, $configurationId);
                 }
+            }
 
-                try {
-                    $installPath = InstalledVersions::getInstallPath($packageName);
-                } catch (\Throwable) {
-                    continue;
-                }
+            try {
+                $installPath = InstalledVersions::getInstallPath($packageName);
+            } catch (\Throwable) {
+                continue;
+            }
 
-                if ($installPath && is_file($services = $installPath.'/config/services.php')) {
-                    $loader->load($services);
-                }
+            if ($installPath && is_file($services = $installPath.'/config/services.php')) {
+                $loader->load($services);
             }
         }
 
