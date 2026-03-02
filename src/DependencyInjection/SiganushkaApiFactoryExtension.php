@@ -36,9 +36,12 @@ class SiganushkaApiFactoryExtension extends Extension
             foreach ($config[$packageAlias]['configurations'] as $configName => $configValue) {
                 $configurationId = \sprintf('%s_%s', $defaultConfigurationId, $configName);
 
-                $container->register($configurationId, $configurationClass)->setArgument(0, $configValue);
-                $container->registerAliasForArgument($configurationId, $configurationClass, \sprintf('%sConfiguration', $configName));
+                $container->register($configurationId, $configurationClass)
+                    ->setArgument(0, $configValue)
+                    ->addTag($defaultConfigurationId)
+                ;
 
+                $container->registerAliasForArgument($configurationId, $configurationClass, \sprintf('%sConfiguration', $configName));
                 if ($config[$packageAlias]['default_configuration'] === $configName) {
                     $container->setAlias($defaultConfigurationId, $configurationId);
                     $container->setAlias($configurationClass, $configurationId);
