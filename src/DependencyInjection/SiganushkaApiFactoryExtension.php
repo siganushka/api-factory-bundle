@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Siganushka\ApiFactoryBundle\DependencyInjection;
 
 use Composer\InstalledVersions;
+use Siganushka\ApiFactory\ResolverConfigurator;
+use Siganushka\ApiFactory\ResolverConfiguratorInterface;
 use Siganushka\ApiFactory\ResolverExtensionInterface;
 use Siganushka\ApiFactory\ResolverInterface;
 use Siganushka\ApiFactoryBundle\DependencyInjection\Compiler\ResolverConfiguratorPass;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Argument\TaggedIteratorArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
@@ -66,6 +69,12 @@ class SiganushkaApiFactoryExtension extends Extension
         $container->registerForAutoconfiguration(ResolverExtensionInterface::class)
             ->addTag(ResolverConfiguratorPass::RESOLVER_EXTENSION_TAG)
         ;
+
+        $container->register(ResolverConfigurator::class)
+            ->setArgument(0, new TaggedIteratorArgument(ResolverConfiguratorPass::RESOLVER_EXTENSION_TAG))
+        ;
+
+        $container->setAlias(ResolverConfiguratorInterface::class, ResolverConfigurator::class);
     }
 
     public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface

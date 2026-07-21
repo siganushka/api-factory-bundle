@@ -9,7 +9,9 @@ use Siganushka\ApiFactory\Github\Configuration as GithubConfiguration;
 use Siganushka\ApiFactory\Wechat\Configuration as WechatConfiguration;
 use Siganushka\ApiFactory\Wxpay\Configuration as WxpayConfiguration;
 use Siganushka\ApiFactoryBundle\DependencyInjection\Compiler\ResolverConfiguratorPass;
+use Siganushka\ApiFactoryBundle\DependencyInjection\Security\Factory\WechatJscodeAuthenticatorFactory;
 use Siganushka\ApiFactoryBundle\DependencyInjection\SiganushkaApiFactoryExtension;
+use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -25,6 +27,12 @@ class SiganushkaApiFactoryBundle extends Bundle
         $extension->addPackage('siganushka/wechat-api', WechatConfiguration::class);
         $extension->addPackage('siganushka/wxpay-api', WxpayConfiguration::class);
         $extension->addPackage('siganushka/alipay-api', AlipayConfiguration::class);
+
+        if ($container->hasExtension('security')) {
+            /** @var SecurityExtension */
+            $security = $container->getExtension('security');
+            $security->addAuthenticatorFactory(new WechatJscodeAuthenticatorFactory());
+        }
 
         $container->addCompilerPass(new ResolverConfiguratorPass());
     }

@@ -20,6 +20,7 @@
         "siganushka/api-factory": "dev-main"
     },
     "require-dev": {
+        "symfony/security-bundle": "^7.4|^8.0",
         "siganushka/github-api": "dev-main",
         "siganushka/alipay-api": "dev-main",
         "siganushka/wechat-api": "dev-main",

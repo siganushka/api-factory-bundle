@@ -4,14 +4,21 @@ declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-use Siganushka\ApiFactory\ResolverConfigurator;
-use Siganushka\ApiFactory\ResolverConfiguratorInterface;
-use Siganushka\ApiFactoryBundle\DependencyInjection\Compiler\ResolverConfiguratorPass;
+use Siganushka\ApiFactoryBundle\SiganushkaApiFactoryBundle;
 
 return static function (ContainerConfigurator $container): void {
-    $container->services()
-        ->set(ResolverConfigurator::class)
-            ->arg(0, tagged_iterator(ResolverConfiguratorPass::RESOLVER_EXTENSION_TAG))
-            ->alias(ResolverConfiguratorInterface::class, ResolverConfigurator::class)
+    $services = $container->services()
+        ->defaults()
+            ->autowire()
+            ->autoconfigure()
+    ;
+
+    $ref = new \ReflectionClass(SiganushkaApiFactoryBundle::class);
+    $services->load($ref->getNamespaceName().'\\', '../src/')
+        ->exclude([
+            '../src/DependencyInjection/',
+            '../src/Event/',
+            '../src/SiganushkaApiFactoryBundle.php',
+        ])
     ;
 };
