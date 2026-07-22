@@ -9,7 +9,10 @@ use Siganushka\ApiFactory\ResolverConfigurator;
 use Siganushka\ApiFactory\ResolverConfiguratorInterface;
 use Siganushka\ApiFactory\ResolverExtensionInterface;
 use Siganushka\ApiFactory\ResolverInterface;
+use Siganushka\ApiFactory\Wechat\Miniapp\SessionKey;
 use Siganushka\ApiFactoryBundle\DependencyInjection\Compiler\ResolverConfiguratorPass;
+use Siganushka\ApiFactoryBundle\Security\Http\Authenticator\WechatJscodeAuthenticator;
+use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Argument\TaggedIteratorArgument;
@@ -60,6 +63,10 @@ class SiganushkaApiFactoryExtension extends Extension
             if ($installPath && is_file($services = $installPath.'/config/services.php')) {
                 $loader->load($services);
             }
+        }
+
+        if (!class_exists(SecurityBundle::class) || !class_exists(SessionKey::class)) {
+            $container->removeDefinition(WechatJscodeAuthenticator::class);
         }
 
         $container->registerForAutoconfiguration(ResolverInterface::class)
