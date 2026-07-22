@@ -46,6 +46,9 @@ class WechatJscodeAuthenticatorFactory implements AuthenticatorFactoryInterface
                 ->scalarNode('jscode_parameter')
                     ->defaultValue('jscode')
                 ->end()
+                ->booleanNode('interactive')
+                    ->defaultTrue()
+                ->end()
             ->end();
     }
 
@@ -53,7 +56,8 @@ class WechatJscodeAuthenticatorFactory implements AuthenticatorFactoryInterface
      * @param array{
      *  user_persister: string|null,
      *  check_path: string,
-     *  jscode_parameter: string
+     *  jscode_parameter: string,
+     *  interactive: bool,
      * } $config
      */
     public function createAuthenticator(ContainerBuilder $container, string $firewallName, array $config, string $userProviderId): string|array
@@ -67,6 +71,7 @@ class WechatJscodeAuthenticatorFactory implements AuthenticatorFactoryInterface
             ->replaceArgument('$options', [
                 'check_path' => $config['check_path'],
                 'jscode_parameter' => $config['jscode_parameter'],
+                'interactive' => $config['interactive'],
             ])
         ;
 

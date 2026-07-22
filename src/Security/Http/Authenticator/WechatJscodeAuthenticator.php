@@ -28,6 +28,13 @@ use Symfony\Component\Security\Http\HttpUtils;
 
 class WechatJscodeAuthenticator extends AbstractAuthenticator implements InteractiveAuthenticatorInterface
 {
+    /**
+     * @var array{
+     *  check_path: string,
+     *  jscode_parameter: string,
+     *  interactive: bool
+     * }
+     */
     private readonly array $options;
 
     /**
@@ -45,6 +52,7 @@ class WechatJscodeAuthenticator extends AbstractAuthenticator implements Interac
         $this->options = array_merge([
             'check_path' => '/wechat/jscode',
             'jscode_parameter' => 'jscode',
+            'interactive' => true,
         ], $options);
     }
 
@@ -69,19 +77,19 @@ class WechatJscodeAuthenticator extends AbstractAuthenticator implements Interac
             throw new BadCredentialsException('The jscode is invalid.', 0, $th);
         }
 
-        $arguments = $this->userProvider instanceof AttributesBasedUserProviderInterface
-            ? [$result['unionid'], $result]
-            : [$result['unionid']];
+        $userLoader = function (string $identifier, array $attributes): ?UserInterface {
+            $arguments = $this->userProvider instanceof AttributesBasedUserProviderInterface
+                ? [$identifier, $attributes]
+                : [$identifier];
 
-        try {
-            $authorizedUser = $this->userProvider->loadUserByIdentifier(...$arguments);
-        } catch (UserNotFoundException $th) {
-            if (!$authorizedUser = $this->userPersister?->persist($result)) {
-                throw $th;
+            try {
+                return $this->userProvider->loadUserByIdentifier(...$arguments);
+            } catch (UserNotFoundException) {
+                return $this->userPersister?->persist($attributes);
             }
-        }
+        };
 
-        return new SelfValidatingPassport(new UserBadge($authorizedUser->getUserIdentifier()));
+        return new SelfValidatingPassport(new UserBadge($result['unionid'], $userLoader, $result));
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
@@ -112,6 +120,6 @@ class WechatJscodeAuthenticator extends AbstractAuthenticator implements Interac
 
     public function isInteractive(): bool
     {
-        return true;
+        return $this->options['interactive'];
     }
 }
