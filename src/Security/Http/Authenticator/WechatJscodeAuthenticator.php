@@ -8,12 +8,14 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Siganushka\ApiFactory\Wechat\Miniapp\SessionKey;
 use Siganushka\ApiFactoryBundle\Event\WechatJscodeAuthenticationFailureEvent;
 use Siganushka\ApiFactoryBundle\Event\WechatJscodeAuthenticationSuccessEvent;
+use Siganushka\ApiFactoryBundle\Security\Core\User\UserPersisterInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\AttributesBasedUserProviderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -29,12 +31,14 @@ class WechatJscodeAuthenticator extends AbstractAuthenticator implements Interac
     private readonly array $options;
 
     /**
-     * @param UserProviderInterface<UserInterface> $userProvider
+     * @param UserProviderInterface<UserInterface>       $userProvider
+     * @param UserPersisterInterface<UserInterface>|null $userPersister
      */
     public function __construct(
         private readonly HttpUtils $httpUtils,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly UserProviderInterface $userProvider,
+        private readonly ?UserPersisterInterface $userPersister,
         private readonly SessionKey $sessionKey,
         array $options = [])
     {
@@ -69,9 +73,15 @@ class WechatJscodeAuthenticator extends AbstractAuthenticator implements Interac
             ? [$result['unionid'], $result]
             : [$result['unionid']];
 
-        $user = $this->userProvider->loadUserByIdentifier(...$arguments);
+        try {
+            $authorizedUser = $this->userProvider->loadUserByIdentifier(...$arguments);
+        } catch (UserNotFoundException $th) {
+            if (!$authorizedUser = $this->userPersister?->persist($result)) {
+                throw $th;
+            }
+        }
 
-        return new SelfValidatingPassport(new UserBadge($user->getUserIdentifier()));
+        return new SelfValidatingPassport(new UserBadge($authorizedUser->getUserIdentifier()));
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
