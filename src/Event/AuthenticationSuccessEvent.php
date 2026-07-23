@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
-class WechatJscodeAuthenticationSuccessEvent extends WechatJscodeAuthenticationEvent
+class AuthenticationSuccessEvent extends AuthenticationEvent
 {
     public function __construct(
         Request $request,
@@ -21,5 +21,10 @@ class WechatJscodeAuthenticationSuccessEvent extends WechatJscodeAuthenticationE
     public function getToken(): TokenInterface
     {
         return $this->token;
+    }
+
+    public static function getAuthenticator(string $authenticator): string
+    {
+        return \sprintf('%s.authentication_success', $authenticator);
     }
 }

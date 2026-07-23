@@ -9,7 +9,10 @@ use Siganushka\ApiFactory\Github\Configuration as GithubConfiguration;
 use Siganushka\ApiFactory\Wechat\Configuration as WechatConfiguration;
 use Siganushka\ApiFactory\Wxpay\Configuration as WxpayConfiguration;
 use Siganushka\ApiFactoryBundle\DependencyInjection\Compiler\ResolverConfiguratorPass;
+use Siganushka\ApiFactoryBundle\DependencyInjection\Security\Factory\GithubAuthenticatorFactory;
 use Siganushka\ApiFactoryBundle\DependencyInjection\Security\Factory\WechatJscodeAuthenticatorFactory;
+use Siganushka\ApiFactoryBundle\DependencyInjection\Security\Factory\WechatMpAuthenticatorFactory;
+use Siganushka\ApiFactoryBundle\DependencyInjection\Security\Factory\WechatOpenAuthenticatorFactory;
 use Siganushka\ApiFactoryBundle\DependencyInjection\SiganushkaApiFactoryExtension;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -31,6 +34,9 @@ class SiganushkaApiFactoryBundle extends Bundle
         if ($container->hasExtension('security')) {
             /** @var SecurityExtension */
             $security = $container->getExtension('security');
+            $security->addAuthenticatorFactory(new GithubAuthenticatorFactory());
+            $security->addAuthenticatorFactory(new WechatMpAuthenticatorFactory());
+            $security->addAuthenticatorFactory(new WechatOpenAuthenticatorFactory());
             $security->addAuthenticatorFactory(new WechatJscodeAuthenticatorFactory());
         }
 

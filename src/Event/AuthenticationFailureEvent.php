@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
-class WechatJscodeAuthenticationFailureEvent extends WechatJscodeAuthenticationEvent
+class AuthenticationFailureEvent extends AuthenticationEvent
 {
     public function __construct(
         Request $request,
@@ -21,5 +21,10 @@ class WechatJscodeAuthenticationFailureEvent extends WechatJscodeAuthenticationE
     public function getException(): AuthenticationException
     {
         return $this->exception;
+    }
+
+    public static function getAuthenticator(string $authenticator): string
+    {
+        return \sprintf('%s.authentication_failure', $authenticator);
     }
 }

@@ -12,7 +12,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 interface UserPersisterInterface
 {
     /**
-     * @return TUser
+     * @return TUser|null
      */
-    public function persist(array $credentials): UserInterface;
+    public function persist(string $userIdentifier, array $attributes): ?UserInterface;
 }
