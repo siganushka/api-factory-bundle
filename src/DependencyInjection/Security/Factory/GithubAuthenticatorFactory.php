@@ -13,7 +13,7 @@ class GithubAuthenticatorFactory extends ApiFactoryAuthenticatorFactory
         parent::__construct(
             authenticatorClass: GithubAuthenticator::class,
             defaultOptions: [
-                'check_path' => '/github/oauth',
+                'check_path' => '/github',
             ],
         );
     }
