@@ -13,8 +13,7 @@ class WechatJscodeAuthenticatorFactory extends ApiFactoryAuthenticatorFactory
         parent::__construct(
             authenticatorClass: WechatJscodeAuthenticator::class,
             defaultOptions: [
-                'check_path' => '/wechat/jscode',
-                'code_parameter' => 'jscode',
+                'check_path' => '/login/wechat/jscode',
             ],
         );
     }

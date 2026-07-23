@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\Reference;
 abstract class ApiFactoryAuthenticatorFactory implements AuthenticatorFactoryInterface
 {
     public const DEFAULT_OPTIONS = [
-        'check_path' => '/login_check',
+        'check_path' => '/login',
         'success_path' => '/',
         'failure_path' => '/',
         'code_parameter' => 'code',
