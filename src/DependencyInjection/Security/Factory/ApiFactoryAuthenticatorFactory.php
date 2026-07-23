@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\Reference;
 abstract class ApiFactoryAuthenticatorFactory implements AuthenticatorFactoryInterface
 {
     public const DEFAULT_OPTIONS = [
-        'check_path' => '/login/check',
+        'check_path' => '/login_check',
         'success_path' => '/',
         'failure_path' => '/',
         'code_parameter' => 'code',
@@ -88,7 +88,7 @@ abstract class ApiFactoryAuthenticatorFactory implements AuthenticatorFactoryInt
     public function createAuthenticator(ContainerBuilder $container, string $firewallName, array $config, string $userProviderId): string|array
     {
         $authenticatorId = \sprintf('security.authenticator.%s.%s', $this->getKey(), $firewallName);
-        $options = array_replace(self::DEFAULT_OPTIONS, array_intersect_key($config, self::DEFAULT_OPTIONS));
+        $options = array_intersect_key($config, self::DEFAULT_OPTIONS);
 
         $container
             ->setDefinition($authenticatorId, new ChildDefinition($this->authenticatorClass))
