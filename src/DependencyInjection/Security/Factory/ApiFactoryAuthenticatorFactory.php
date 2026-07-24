@@ -48,31 +48,25 @@ abstract class ApiFactoryAuthenticatorFactory implements AuthenticatorFactoryInt
      */
     public function addConfiguration(NodeDefinition $node): void
     {
-        $node
-            ->children()
-                ->scalarNode('user_persister')
-                    ->defaultValue(NullUserPersister::class)
-                    ->validate()
-                        ->ifTrue(static fn (mixed $v): bool => \is_string($v) && !is_subclass_of($v, UserPersisterInterface::class, true))
-                        ->thenInvalid('The value must be instanceof '.UserPersisterInterface::class.', %s given.')
-                    ->end()
+        $builder = $node->children();
+
+        $builder
+            ->scalarNode('user_persister')
+                ->defaultValue(NullUserPersister::class)
+                ->validate()
+                    ->ifTrue(static fn (mixed $v): bool => \is_string($v) && !is_subclass_of($v, UserPersisterInterface::class, true))
+                    ->thenInvalid('The value must be instanceof '.UserPersisterInterface::class.', %s given.')
                 ->end()
-                ->scalarNode('check_path')
-                    ->defaultValue($this->defaultOptions['check_path'] ?? self::DEFAULT_OPTIONS['check_path'])
-                ->end()
-                ->scalarNode('success_path')
-                    ->defaultValue($this->defaultOptions['success_path'] ?? self::DEFAULT_OPTIONS['success_path'])
-                ->end()
-                ->scalarNode('failure_path')
-                    ->defaultValue($this->defaultOptions['failure_path'] ?? self::DEFAULT_OPTIONS['failure_path'])
-                ->end()
-                ->scalarNode('code_parameter')
-                    ->defaultValue($this->defaultOptions['code_parameter'] ?? self::DEFAULT_OPTIONS['code_parameter'])
-                ->end()
-                ->booleanNode('interactive')
-                    ->defaultValue($this->defaultOptions['interactive'] ?? self::DEFAULT_OPTIONS['interactive'])
-                ->end()
-            ->end();
+            ->end()
+        ;
+
+        foreach (self::DEFAULT_OPTIONS as $name => $default) {
+            if (\is_bool($default)) {
+                $builder->booleanNode($name)->defaultValue($this->defaultOptions[$name] ?? $default);
+            } else {
+                $builder->scalarNode($name)->defaultValue($this->defaultOptions[$name] ?? $default);
+            }
+        }
     }
 
     /**

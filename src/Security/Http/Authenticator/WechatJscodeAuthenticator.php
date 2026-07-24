@@ -17,7 +17,12 @@ class WechatJscodeAuthenticator extends ApiFactoryAuthenticator
     {
     }
 
-    protected function resolveUserIdentifier(string $code): array
+    protected function createEntryPointResponse(string $redirectUri): Response
+    {
+        return $this->createHttpUnauthorizedResponse(\sprintf('The %s not found.', $this->options['code_parameter']));
+    }
+
+    protected function createUserAttributes(string $code): array
     {
         /** @var array{ unionid: string } */
         $attributes = $this->sessionKey->send(compact('code'));
@@ -34,9 +39,11 @@ class WechatJscodeAuthenticator extends ApiFactoryAuthenticator
 
     protected function createAuthenticationFailureResponse(Request $request, AuthenticationException $exception): Response
     {
-        $code = JsonResponse::HTTP_UNAUTHORIZED;
-        $message = strtr($exception->getMessageKey(), $exception->getMessageData());
+        return $this->createHttpUnauthorizedResponse(strtr($exception->getMessageKey(), $exception->getMessageData()));
+    }
 
+    protected function createHttpUnauthorizedResponse(string $message, int $code = JsonResponse::HTTP_UNAUTHORIZED): Response
+    {
         return new JsonResponse(compact('code', 'message'), $code, ['WWW-Authenticate' => 'Bearer']);
     }
 }
