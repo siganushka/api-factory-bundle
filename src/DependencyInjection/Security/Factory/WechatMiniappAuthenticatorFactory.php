@@ -14,6 +14,7 @@ class WechatMiniappAuthenticatorFactory extends ApiFactoryAuthenticatorFactory
             authenticatorClass: WechatMiniappAuthenticator::class,
             defaultOptions: [
                 'check_path' => '/login/wechat/miniapp',
+                'code_parameter' => 'jscode',
             ],
         );
     }
