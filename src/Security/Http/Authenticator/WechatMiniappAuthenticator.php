@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Siganushka\ApiFactoryBundle\Security\Http\Authenticator;
 
+use Siganushka\ApiFactory\Wechat\Configuration;
+use Siganushka\ApiFactory\Wechat\ConfigurationExtension;
 use Siganushka\ApiFactory\Wechat\Miniapp\SessionKey;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,8 +15,11 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
 class WechatMiniappAuthenticator extends ApiFactoryAuthenticator
 {
-    public function __construct(private readonly SessionKey $sessionKey)
+    private readonly SessionKey $sessionKey;
+
+    public function __construct(Configuration $configuration, SessionKey $sessionKey)
     {
+        $this->sessionKey = $sessionKey->extend(new ConfigurationExtension($configuration));
     }
 
     protected function createEntryPointResponse(string $redirectUri): Response

@@ -58,6 +58,9 @@ abstract class ApiFactoryAuthenticatorFactory implements AuthenticatorFactoryInt
                     ->thenInvalid('The value must be instanceof '.UserPersisterInterface::class.', %s given.')
                 ->end()
             ->end()
+            ->scalarNode('configuration')
+                ->defaultNull()
+            ->end()
         ;
 
         foreach (self::DEFAULT_OPTIONS as $name => $default) {
@@ -72,6 +75,7 @@ abstract class ApiFactoryAuthenticatorFactory implements AuthenticatorFactoryInt
     /**
      * @param array{
      *  user_persister: string,
+     *  configuration: string|null,
      *  check_path: string,
      *  success_path: string,
      *  failure_path: string,
@@ -82,14 +86,17 @@ abstract class ApiFactoryAuthenticatorFactory implements AuthenticatorFactoryInt
     public function createAuthenticator(ContainerBuilder $container, string $firewallName, array $config, string $userProviderId): string|array
     {
         $authenticatorId = \sprintf('security.authenticator.%s.%s', $this->getKey(), $firewallName);
-        $options = array_intersect_key($config, self::DEFAULT_OPTIONS);
 
-        $container
-            ->setDefinition($authenticatorId, new ChildDefinition($this->authenticatorClass))
+        $authenticatorDef = $container->setDefinition($authenticatorId, new ChildDefinition($this->authenticatorClass));
+        $authenticatorDef
             ->addMethodCall('setUserProvider', [new Reference($userProviderId)])
             ->addMethodCall('setUserPersister', [new Reference($config['user_persister'])])
-            ->addMethodCall('setOptions', [$options])
+            ->addMethodCall('setOptions', [array_intersect_key($config, self::DEFAULT_OPTIONS)])
         ;
+
+        if ($config['configuration']) {
+            $authenticatorDef->replaceArgument('$configuration', new Reference($config['configuration']));
+        }
 
         return $authenticatorId;
     }

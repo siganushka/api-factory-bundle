@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace Siganushka\ApiFactoryBundle\Security\Http\Authenticator;
 
+use Siganushka\ApiFactory\Github\Configuration;
+use Siganushka\ApiFactory\Github\ConfigurationExtension;
 use Siganushka\ApiFactory\Github\OAuth\Client;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class GithubAuthenticator extends ApiFactoryAuthenticator
 {
-    public function __construct(private readonly Client $client)
+    private readonly Client $client;
+
+    public function __construct(Configuration $configuration, Client $client)
     {
+        $this->client = $client->extend(new ConfigurationExtension($configuration));
     }
 
     protected function createEntryPointResponse(string $redirectUri): RedirectResponse

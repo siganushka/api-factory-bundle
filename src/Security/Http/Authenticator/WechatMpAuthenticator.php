@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace Siganushka\ApiFactoryBundle\Security\Http\Authenticator;
 
+use Siganushka\ApiFactory\Wechat\Configuration;
+use Siganushka\ApiFactory\Wechat\ConfigurationExtension;
 use Siganushka\ApiFactory\Wechat\OAuth\Client;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class WechatMpAuthenticator extends ApiFactoryAuthenticator
 {
-    public function __construct(private readonly Client $client)
+    private readonly Client $client;
+
+    public function __construct(Configuration $configuration, Client $client)
     {
+        $this->client = $client->extend(new ConfigurationExtension($configuration));
     }
 
     protected function createEntryPointResponse(string $redirectUri): RedirectResponse
