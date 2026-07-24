@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
-class WechatJscodeAuthenticator extends ApiFactoryAuthenticator
+class WechatMiniappAuthenticator extends ApiFactoryAuthenticator
 {
     public function __construct(private readonly SessionKey $sessionKey)
     {

@@ -11,7 +11,7 @@ use Siganushka\ApiFactory\ResolverExtensionInterface;
 use Siganushka\ApiFactory\ResolverInterface;
 use Siganushka\ApiFactoryBundle\DependencyInjection\Compiler\ResolverConfiguratorPass;
 use Siganushka\ApiFactoryBundle\Security\Http\Authenticator\GithubAuthenticator;
-use Siganushka\ApiFactoryBundle\Security\Http\Authenticator\WechatJscodeAuthenticator;
+use Siganushka\ApiFactoryBundle\Security\Http\Authenticator\WechatMiniappAuthenticator;
 use Siganushka\ApiFactoryBundle\Security\Http\Authenticator\WechatMpAuthenticator;
 use Siganushka\ApiFactoryBundle\Security\Http\Authenticator\WechatOpenAuthenticator;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
@@ -71,7 +71,7 @@ class SiganushkaApiFactoryExtension extends Extension
             $container->removeDefinition(GithubAuthenticator::class);
             $container->removeDefinition(WechatMpAuthenticator::class);
             $container->removeDefinition(WechatOpenAuthenticator::class);
-            $container->removeDefinition(WechatJscodeAuthenticator::class);
+            $container->removeDefinition(WechatMiniappAuthenticator::class);
         }
 
         $container->registerForAutoconfiguration(ResolverInterface::class)
