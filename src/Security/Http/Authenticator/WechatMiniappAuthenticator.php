@@ -22,11 +22,6 @@ class WechatMiniappAuthenticator extends ApiFactoryAuthenticator
         $this->sessionKey = $sessionKey->extend(new ConfigurationExtension($configuration));
     }
 
-    protected function createEntryPointResponse(string $redirectUri): Response
-    {
-        return $this->createHttpUnauthorizedResponse(\sprintf('The %s not found.', $this->options['code_parameter']));
-    }
-
     protected function createUserAttributes(string $code): array
     {
         /** @var array{ unionid: string } */
@@ -44,11 +39,15 @@ class WechatMiniappAuthenticator extends ApiFactoryAuthenticator
 
     protected function createAuthenticationFailureResponse(Request $request, AuthenticationException $exception): Response
     {
-        return $this->createHttpUnauthorizedResponse(strtr($exception->getMessageKey(), $exception->getMessageData()));
+        $error = strtr($exception->getMessageKey(), $exception->getMessageData());
+
+        return new JsonResponse(compact('error'), JsonResponse::HTTP_UNAUTHORIZED, ['WWW-Authenticate' => 'Bearer']);
     }
 
-    protected function createHttpUnauthorizedResponse(string $message, int $code = JsonResponse::HTTP_UNAUTHORIZED): Response
+    protected function createEntryPointResponse(string $redirectUri): Response
     {
-        return new JsonResponse(compact('code', 'message'), $code, ['WWW-Authenticate' => 'Bearer']);
+        $error = \sprintf('The %s not found.', $this->options['code_parameter']);
+
+        return new JsonResponse(compact('error'), JsonResponse::HTTP_UNAUTHORIZED, ['WWW-Authenticate' => 'Bearer']);
     }
 }
