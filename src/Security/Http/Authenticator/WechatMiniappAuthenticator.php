@@ -24,10 +24,10 @@ class WechatMiniappAuthenticator extends ApiFactoryAuthenticator
 
     protected function createUserAttributes(string $code): array
     {
-        /** @var array{ unionid: string } */
+        /** @var array{ openid: string } */
         $attributes = $this->sessionKey->send(compact('code'));
 
-        return [$attributes['unionid'], $attributes];
+        return [$attributes['openid'], $attributes];
     }
 
     protected function createAuthenticationSuccessResponse(Request $request, TokenInterface $token, string $firewallName): Response

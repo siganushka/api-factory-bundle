@@ -27,9 +27,9 @@ class WechatMpAuthenticator extends ApiFactoryAuthenticator
 
     protected function createUserAttributes(string $code): array
     {
-        /** @var array{ unionid: string } */
+        /** @var array{ openid: string } */
         $attributes = $this->client->getAccessToken(compact('code'));
 
-        return [$attributes['unionid'], $attributes];
+        return [$attributes['openid'], $attributes];
     }
 }
