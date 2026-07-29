@@ -20,7 +20,6 @@ abstract class ApiFactoryAuthenticatorFactory implements AuthenticatorFactoryInt
         'success_path' => '/',
         'failure_path' => '/',
         'code_parameter' => 'code',
-        'interactive' => true,
     ];
 
     /**
@@ -29,7 +28,6 @@ abstract class ApiFactoryAuthenticatorFactory implements AuthenticatorFactoryInt
      *  success_path?: string,
      *  failure_path?: string,
      *  code_parameter?: string,
-     *  interactive?: bool
      * } $defaultOptions
      */
     public function __construct(
@@ -64,11 +62,7 @@ abstract class ApiFactoryAuthenticatorFactory implements AuthenticatorFactoryInt
         ;
 
         foreach (self::DEFAULT_OPTIONS as $name => $default) {
-            if (\is_bool($default)) {
-                $builder->booleanNode($name)->defaultValue($this->defaultOptions[$name] ?? $default);
-            } else {
-                $builder->scalarNode($name)->defaultValue($this->defaultOptions[$name] ?? $default);
-            }
+            $builder->scalarNode($name)->defaultValue($this->defaultOptions[$name] ?? $default);
         }
     }
 
@@ -79,8 +73,7 @@ abstract class ApiFactoryAuthenticatorFactory implements AuthenticatorFactoryInt
      *  check_path: string,
      *  success_path: string,
      *  failure_path: string,
-     *  code_parameter: string,
-     *  interactive: bool
+     *  code_parameter: string
      * } $config
      */
     public function createAuthenticator(ContainerBuilder $container, string $firewallName, array $config, string $userProviderId): string|array

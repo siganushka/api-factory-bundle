@@ -54,8 +54,7 @@ abstract class ApiFactoryAuthenticator extends AbstractAuthenticator implements 
      *  check_path: string,
      *  success_path: string,
      *  failure_path: string,
-     *  code_parameter: string,
-     *  interactive: bool
+     *  code_parameter: string
      * }
      */
     protected array $options = ApiFactoryAuthenticatorFactory::DEFAULT_OPTIONS;
@@ -133,7 +132,7 @@ abstract class ApiFactoryAuthenticator extends AbstractAuthenticator implements 
 
     public function isInteractive(): bool
     {
-        return $this->options['interactive'];
+        return true;
     }
 
     protected function createUserLoader(string $userIdentifier, array $attributes): ?UserInterface
