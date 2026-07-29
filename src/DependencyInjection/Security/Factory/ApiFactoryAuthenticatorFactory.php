@@ -84,7 +84,7 @@ abstract class ApiFactoryAuthenticatorFactory implements AuthenticatorFactoryInt
         $authenticatorDef
             ->addMethodCall('setUserProvider', [new Reference($userProviderId)])
             ->addMethodCall('setUserPersister', [new Reference($config['user_persister'])])
-            ->addMethodCall('setOptions', [array_intersect_key($config, self::DEFAULT_OPTIONS)])
+            ->addMethodCall('setOptions', [array_intersect_key(array_filter($config, static fn ($v) => null !== $v), self::DEFAULT_OPTIONS)])
         ;
 
         if ($config['configuration']) {
