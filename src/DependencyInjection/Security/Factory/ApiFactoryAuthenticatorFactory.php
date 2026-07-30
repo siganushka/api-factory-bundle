@@ -31,7 +31,7 @@ abstract class ApiFactoryAuthenticatorFactory implements AuthenticatorFactoryInt
      * } $defaultOptions
      */
     public function __construct(
-        private readonly string $authenticatorClass,
+        private readonly string $authenticator,
         private readonly array $defaultOptions = [])
     {
     }
@@ -80,7 +80,7 @@ abstract class ApiFactoryAuthenticatorFactory implements AuthenticatorFactoryInt
     {
         $authenticatorId = \sprintf('security.authenticator.%s.%s', $this->getKey(), $firewallName);
 
-        $authenticatorDef = $container->setDefinition($authenticatorId, new ChildDefinition($this->authenticatorClass));
+        $authenticatorDef = $container->setDefinition($authenticatorId, new ChildDefinition($this->authenticator));
         $authenticatorDef
             ->addMethodCall('setUserProvider', [new Reference($userProviderId)])
             ->addMethodCall('setUserPersister', [new Reference($config['user_persister'])])

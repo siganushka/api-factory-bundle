@@ -11,7 +11,7 @@ class GithubAuthenticatorFactory extends ApiFactoryAuthenticatorFactory
     public function __construct()
     {
         parent::__construct(
-            authenticatorClass: GithubAuthenticator::class,
+            authenticator: GithubAuthenticator::class,
             defaultOptions: [
                 'check_path' => '/login/github',
             ],
