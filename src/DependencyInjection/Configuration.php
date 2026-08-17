@@ -10,7 +10,6 @@ use Symfony\Component\Config\Definition\Builder\NodeParentInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
-use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class Configuration implements ConfigurationInterface
@@ -27,7 +26,7 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder('siganushka_api_factory');
         $rootNode = $treeBuilder->getRootNode();
 
-        foreach ($this->packages as $packageName => $configurationClass) {
+        foreach ($this->packages as $packageAlias => $configurationClass) {
             if (!class_exists($configurationClass)) {
                 throw new \InvalidArgumentException(\sprintf('The configuration class "%s" does not exists.', $configurationClass));
             }
@@ -36,7 +35,6 @@ class Configuration implements ConfigurationInterface
                 throw new \UnexpectedValueException(\sprintf('The configuration class expected of type "%s", "%s" given.', AbstractConfiguration::class, $configurationClass));
             }
 
-            $packageAlias = static::normalizePackageAlias($packageName);
             $packageNode = $this->createMultipleConfigsNode($rootNode, $packageAlias, \sprintf('%s configuration', ucfirst($packageAlias)))
                 ->children()
                     ->arrayNode('configurations')
@@ -121,16 +119,5 @@ class Configuration implements ConfigurationInterface
                     ->scalarNode('default_configuration')->end()
                 ->end()
         ;
-    }
-
-    public static function normalizePackageAlias(string $packageName): string
-    {
-        $packageName = Container::underscore($packageName);
-        $packageName = rtrim($packageName, '-api');
-
-        $paths = explode('/', $packageName);
-        $alias = array_pop($paths);
-
-        return str_replace(['-', '.'], '_', $alias);
     }
 }

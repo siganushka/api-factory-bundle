@@ -82,7 +82,7 @@ class SiganushkaApiFactoryExtensionTest extends TestCase
     private function createContainerWithConfig(array $config = []): ContainerBuilder
     {
         $extension = new SiganushkaApiFactoryExtension();
-        $extension->addPackage('vendor/test', TestConfiguration::class);
+        $extension->addPackage('test', TestConfiguration::class);
 
         $container = new ContainerBuilder();
         $container->registerExtension($extension);

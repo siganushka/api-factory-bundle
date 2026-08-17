@@ -26,10 +26,10 @@ class SiganushkaApiFactoryBundle extends Bundle
 
         /** @var SiganushkaApiFactoryExtension */
         $extension = $container->getExtension('siganushka_api_factory');
-        $extension->addPackage('siganushka/github-api', GithubConfiguration::class);
-        $extension->addPackage('siganushka/wechat-api', WechatConfiguration::class);
-        $extension->addPackage('siganushka/wxpay-api', WxpayConfiguration::class);
-        $extension->addPackage('siganushka/alipay-api', AlipayConfiguration::class);
+        $extension->addPackage('github', GithubConfiguration::class);
+        $extension->addPackage('wechat', WechatConfiguration::class);
+        $extension->addPackage('wxpay', WxpayConfiguration::class);
+        $extension->addPackage('alipay', AlipayConfiguration::class);
 
         if ($container->hasExtension('security')) {
             /** @var SecurityExtension */

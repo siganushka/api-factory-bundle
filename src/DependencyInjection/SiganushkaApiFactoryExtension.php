@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Siganushka\ApiFactoryBundle\DependencyInjection;
 
-use Composer\InstalledVersions;
 use Siganushka\ApiFactory\ResolverConfigurator;
 use Siganushka\ApiFactory\ResolverConfiguratorInterface;
 use Siganushka\ApiFactory\ResolverExtensionInterface;
@@ -34,8 +33,7 @@ class SiganushkaApiFactoryExtension extends Extension
         $configuration = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($configuration, $configs);
 
-        foreach ($this->getAvailablePackages() as $packageName => $configurationClass) {
-            $packageAlias = Configuration::normalizePackageAlias($packageName);
+        foreach ($this->getAvailablePackages() as $packageAlias => $configurationClass) {
             if (!$this->isConfigEnabled($container, $config[$packageAlias])) {
                 continue;
             }
@@ -56,13 +54,10 @@ class SiganushkaApiFactoryExtension extends Extension
                 }
             }
 
-            try {
-                $installPath = InstalledVersions::getInstallPath($packageName);
-            } catch (\Throwable) {
-                continue;
-            }
+            $ref = new \ReflectionClass($configurationClass);
+            $fileName = $ref->getFileName();
 
-            if ($installPath && is_file($services = $installPath.'/config/services.php')) {
+            if ($fileName && is_file($services = \dirname($fileName).'/../config/services.php')) {
                 $loader->load($services);
             }
         }
@@ -94,9 +89,9 @@ class SiganushkaApiFactoryExtension extends Extension
         return new Configuration($this->getAvailablePackages());
     }
 
-    public function addPackage(string $packageName, string $configurationClass): void
+    public function addPackage(string $packageAlias, string $configurationClass): void
     {
-        $this->packages[$packageName] = $configurationClass;
+        $this->packages[$packageAlias] = $configurationClass;
     }
 
     public function getPackages(): array
@@ -106,6 +101,6 @@ class SiganushkaApiFactoryExtension extends Extension
 
     public function getAvailablePackages(): array
     {
-        return array_filter($this->packages, fn (string $packageName) => ContainerBuilder::willBeAvailable($packageName, $this->packages[$packageName], ['siganushka/api-factory-bundle']), \ARRAY_FILTER_USE_KEY);
+        return array_filter($this->packages, static fn (string $configurationClass) => class_exists($configurationClass));
     }
 }

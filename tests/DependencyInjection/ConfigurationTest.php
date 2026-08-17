@@ -19,7 +19,7 @@ final class ConfigurationTest extends TestCase
     protected function setUp(): void
     {
         $packages = [
-            'vendor/test' => TestConfiguration::class,
+            'test' => TestConfiguration::class,
         ];
 
         $this->processor = new Processor();
@@ -91,15 +91,6 @@ final class ConfigurationTest extends TestCase
         ]));
     }
 
-    public function testNormalizePackageAlias(): void
-    {
-        static::assertSame('test', Configuration::normalizePackageAlias('test-api'));
-        static::assertSame('foo', Configuration::normalizePackageAlias('vendor/foo'));
-        static::assertSame('baz', Configuration::normalizePackageAlias('foo/bar/Baz'));
-        static::assertSame('test_bundle', Configuration::normalizePackageAlias('test-bundle'));
-        static::assertSame('test_bundle', Configuration::normalizePackageAlias('test/Test-Bundle-Api'));
-    }
-
     public function testUnrecognizedOptions(): void
     {
         $this->expectException(InvalidConfigurationException::class);
@@ -144,7 +135,7 @@ final class ConfigurationTest extends TestCase
         $this->expectExceptionMessage('The configuration class "NonExistingConfigurationClass" does not exists');
 
         $packages = [
-            'vendor/test' => 'NonExistingConfigurationClass',
+            'test' => 'NonExistingConfigurationClass',
         ];
 
         $configuration = new Configuration($packages);
@@ -157,7 +148,7 @@ final class ConfigurationTest extends TestCase
         $this->expectExceptionMessage(\sprintf('The configuration class expected of type "%s", "%s" given', AbstractConfiguration::class, \stdClass::class));
 
         $packages = [
-            'vendor/test' => \stdClass::class,
+            'test' => \stdClass::class,
         ];
 
         $configuration = new Configuration($packages);
