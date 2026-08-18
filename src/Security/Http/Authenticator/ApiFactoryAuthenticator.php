@@ -150,10 +150,9 @@ abstract class ApiFactoryAuthenticator extends AbstractAuthenticator implements 
 
     protected function createAuthenticationSuccessResponse(Request $request, TokenInterface $token, string $firewallName): Response
     {
-        $targetPath = $this->getTargetPath($request->getSession(), $firewallName)
-            ?? $this->options['success_path'];
+        $targetPath = $this->getTargetPath($request->getSession(), $firewallName);
 
-        return $this->httpUtils->createRedirectResponse($request, $targetPath);
+        return $this->httpUtils->createRedirectResponse($request, $targetPath ?? $this->options['success_path']);
     }
 
     protected function createAuthenticationFailureResponse(Request $request, AuthenticationException $exception): Response

@@ -9,7 +9,6 @@ use Siganushka\ApiFactory\Wechat\ConfigurationExtension;
 use Siganushka\ApiFactory\Wechat\Miniapp\SessionKey;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
@@ -30,21 +29,21 @@ class WechatMiniappAuthenticator extends ApiFactoryAuthenticator
         return [$attributes['openid'], $attributes];
     }
 
-    protected function createAuthenticationSuccessResponse(Request $request, TokenInterface $token, string $firewallName): Response
+    protected function createAuthenticationSuccessResponse(Request $request, TokenInterface $token, string $firewallName): JsonResponse
     {
         $identifier = $token->getUser()?->getUserIdentifier();
 
         return new JsonResponse(compact('identifier'));
     }
 
-    protected function createAuthenticationFailureResponse(Request $request, AuthenticationException $exception): Response
+    protected function createAuthenticationFailureResponse(Request $request, AuthenticationException $exception): JsonResponse
     {
         $error = strtr($exception->getMessageKey(), $exception->getMessageData());
 
         return new JsonResponse(compact('error'), JsonResponse::HTTP_UNAUTHORIZED, ['WWW-Authenticate' => 'Bearer']);
     }
 
-    protected function createEntryPointResponse(string $redirectUri): Response
+    protected function createEntryPointResponse(string $redirectUri): JsonResponse
     {
         $error = \sprintf('The %s not found.', $this->options['code_parameter']);
 
