@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Siganushka\ApiFactoryBundle\Security\Http\Authenticator;
 
-use Siganushka\ApiFactoryBundle\DependencyInjection\Security\Factory\ApiFactoryAuthenticatorFactory;
 use Siganushka\ApiFactoryBundle\Event\AuthenticationFailureEvent;
 use Siganushka\ApiFactoryBundle\Event\AuthenticationSuccessEvent;
 use Siganushka\ApiFactoryBundle\Security\Core\User\UserPersisterInterface;
@@ -65,7 +64,14 @@ abstract class ApiFactoryAuthenticator extends AbstractAuthenticator implements 
      *  state_enabled: bool
      * }
      */
-    protected array $options = ApiFactoryAuthenticatorFactory::DEFAULT_OPTIONS;
+    protected array $options = [
+        'check_path' => '/login',
+        'success_path' => '/',
+        'failure_path' => '/',
+        'code_parameter' => 'code',
+        'state_parameter' => 'state',
+        'state_enabled' => true,
+    ];
 
     /**
      * @param UserProviderInterface<UserInterface> $userProvider
@@ -135,8 +141,8 @@ abstract class ApiFactoryAuthenticator extends AbstractAuthenticator implements 
 
     public function start(Request $request, ?AuthenticationException $authException = null): Response
     {
-        $redirectUri = $this->httpUtils->generateUri($request, $this->options['check_path']);
-        $response = $this->createEntryPointResponse($redirectUri);
+        $redirect = $this->httpUtils->generateUri($request, $this->options['check_path']);
+        $response = $this->createEntryPointResponse($redirect);
 
         if ($response instanceof RedirectResponse && $this->options['state_enabled']) {
             $qs = \sprintf('%s=', $this->options['state_parameter']);

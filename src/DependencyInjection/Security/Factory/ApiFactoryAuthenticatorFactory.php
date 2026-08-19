@@ -15,7 +15,18 @@ use Symfony\Component\DependencyInjection\Reference;
 
 abstract class ApiFactoryAuthenticatorFactory implements AuthenticatorFactoryInterface
 {
-    public const DEFAULT_OPTIONS = [
+    /**
+     * @var array{
+     *  check_path: string,
+     *  success_path: string,
+     *  failure_path: string,
+     *  code_parameter: string,
+     *  state_parameter: string,
+     *  state_enabled: bool,
+     *  ...
+     * }
+     */
+    protected array $options = [
         'check_path' => '/login',
         'success_path' => '/',
         'failure_path' => '/',
@@ -31,13 +42,13 @@ abstract class ApiFactoryAuthenticatorFactory implements AuthenticatorFactoryInt
      *  failure_path?: string,
      *  code_parameter?: string,
      *  state_parameter?: string,
-     *  state_enabled?: bool
+     *  state_enabled?: bool,
+     *  ...
      * } $defaultOptions
      */
-    public function __construct(
-        private readonly string $authenticator,
-        private readonly array $defaultOptions = [])
+    public function __construct(private readonly string $authenticator, array $defaultOptions = [])
     {
+        $this->options = array_merge($this->options, $defaultOptions);
     }
 
     public function getPriority(): int
@@ -65,11 +76,11 @@ abstract class ApiFactoryAuthenticatorFactory implements AuthenticatorFactoryInt
             ->end()
         ;
 
-        foreach (self::DEFAULT_OPTIONS as $name => $default) {
+        foreach ($this->options as $name => $default) {
             if (\is_bool($default)) {
-                $builder->booleanNode($name)->defaultValue($this->defaultOptions[$name] ?? $default);
+                $builder->booleanNode($name)->defaultValue($default);
             } else {
-                $builder->scalarNode($name)->defaultValue($this->defaultOptions[$name] ?? $default);
+                $builder->scalarNode($name)->defaultValue($default);
             }
         }
     }
@@ -85,7 +96,7 @@ abstract class ApiFactoryAuthenticatorFactory implements AuthenticatorFactoryInt
         $authenticatorDef
             ->addMethodCall('setUserProvider', [new Reference($userProviderId)])
             ->addMethodCall('setUserPersister', [new Reference($config['user_persister'])])
-            ->addMethodCall('setOptions', [array_intersect_key(array_filter($config, static fn ($v) => null !== $v), self::DEFAULT_OPTIONS)])
+            ->addMethodCall('setOptions', [array_intersect_key(array_filter($config, static fn ($v) => null !== $v), $this->options)])
         ;
 
         if ($config['configuration']) {
