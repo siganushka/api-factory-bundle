@@ -62,11 +62,17 @@ class SiganushkaApiFactoryExtension extends Extension
             }
         }
 
+        $authenticators = [
+            GithubAuthenticator::class,
+            WechatMpAuthenticator::class,
+            WechatOpenAuthenticator::class,
+            WechatMiniappAuthenticator::class,
+        ];
+
+        array_walk($authenticators, static fn (string $id) => $container->findDefinition($id)->setAbstract(true));
+
         if (!class_exists(SecurityBundle::class)) {
-            $container->removeDefinition(GithubAuthenticator::class);
-            $container->removeDefinition(WechatMpAuthenticator::class);
-            $container->removeDefinition(WechatOpenAuthenticator::class);
-            $container->removeDefinition(WechatMiniappAuthenticator::class);
+            array_walk($authenticators, static fn (string $id) => $container->removeDefinition($id));
         }
 
         $container->registerForAutoconfiguration(ResolverInterface::class)

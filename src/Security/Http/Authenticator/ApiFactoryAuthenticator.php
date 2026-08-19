@@ -8,6 +8,7 @@ use Siganushka\ApiFactoryBundle\DependencyInjection\Security\Factory\ApiFactoryA
 use Siganushka\ApiFactoryBundle\Event\AuthenticationFailureEvent;
 use Siganushka\ApiFactoryBundle\Event\AuthenticationSuccessEvent;
 use Siganushka\ApiFactoryBundle\Security\Core\User\UserPersisterInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -17,6 +18,8 @@ use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\AttributesBasedUserProviderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Component\Security\Csrf\CsrfToken;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\InteractiveAuthenticatorInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
@@ -37,6 +40,9 @@ abstract class ApiFactoryAuthenticator extends AbstractAuthenticator implements 
     public EventDispatcherInterface $eventDispatcher;
 
     #[Required]
+    public CsrfTokenManagerInterface $csrfTokenManager;
+
+    #[Required]
     public HttpUtils $httpUtils;
 
     /**
@@ -54,7 +60,9 @@ abstract class ApiFactoryAuthenticator extends AbstractAuthenticator implements 
      *  check_path: string,
      *  success_path: string,
      *  failure_path: string,
-     *  code_parameter: string
+     *  code_parameter: string,
+     *  state_parameter: string,
+     *  state_enabled: bool
      * }
      */
     protected array $options = ApiFactoryAuthenticatorFactory::DEFAULT_OPTIONS;
@@ -87,12 +95,14 @@ abstract class ApiFactoryAuthenticator extends AbstractAuthenticator implements 
 
     public function authenticate(Request $request): Passport
     {
-        $code = $request->query->get($this->options['code_parameter'])
-            ?? $request->getPayload()->getString($this->options['code_parameter']);
-
-        if (!$code) {
-            throw new BadCredentialsException(\sprintf('The %s not found.', $this->options['code_parameter']));
+        if ($this->options['state_enabled']) {
+            $state = $this->getRequestParameter($request, $this->options['state_parameter']);
+            if (!$this->csrfTokenManager->isTokenValid(new CsrfToken(static::class, $state))) {
+                throw new BadCredentialsException(\sprintf('The %s is invalid.', $this->options['state_parameter']));
+            }
         }
+
+        $code = $this->getRequestParameter($request, $this->options['code_parameter']);
 
         try {
             [$userIdentifier, $attributes] = $this->createUserAttributes($code);
@@ -126,8 +136,16 @@ abstract class ApiFactoryAuthenticator extends AbstractAuthenticator implements 
     public function start(Request $request, ?AuthenticationException $authException = null): Response
     {
         $redirectUri = $this->httpUtils->generateUri($request, $this->options['check_path']);
+        $response = $this->createEntryPointResponse($redirectUri);
 
-        return $this->createEntryPointResponse($redirectUri);
+        if ($response instanceof RedirectResponse && $this->options['state_enabled']) {
+            $qs = \sprintf('%s=', $this->options['state_parameter']);
+            if (!preg_match('/[?&]'.preg_quote($qs, '/').'/', $targetUrl = $response->getTargetUrl())) {
+                $response->setTargetUrl($targetUrl .= (str_contains($targetUrl, '?') ? '&' : '?').$qs.$this->csrfTokenManager->getToken(static::class)->getValue());
+            }
+        }
+
+        return $response;
     }
 
     public function isInteractive(): bool
@@ -161,6 +179,23 @@ abstract class ApiFactoryAuthenticator extends AbstractAuthenticator implements 
         $session->set(SecurityRequestAttributes::AUTHENTICATION_ERROR, $exception);
 
         return $this->httpUtils->createRedirectResponse($request, $this->options['failure_path']);
+    }
+
+    protected function getRequestParameter(Request $request, string $key): string
+    {
+        if ($request->query->has($key)) {
+            return $request->query->getString($key);
+        }
+
+        if ($request->request->has($key)) {
+            return $request->request->getString($key);
+        }
+
+        if ($request->getPayload()->has($key)) {
+            return $request->getPayload()->getString($key);
+        }
+
+        throw new BadCredentialsException(\sprintf('The %s not found.', $key));
     }
 
     /**
