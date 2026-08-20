@@ -12,9 +12,9 @@ class WechatOpenAuthenticatorFactory extends ApiFactoryAuthenticatorFactory
     {
         parent::__construct(
             authenticator: WechatOpenAuthenticator::class,
-            defaultOptions: [
+            options: array_merge([
                 'check_path' => '/login/wechat/open',
-            ],
+            ], WechatOpenAuthenticator::AUTHORIZE_OPTIONS),
         );
     }
 

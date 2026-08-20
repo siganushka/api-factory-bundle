@@ -44,11 +44,11 @@ abstract class ApiFactoryAuthenticatorFactory implements AuthenticatorFactoryInt
      *  state_parameter?: string,
      *  state_enabled?: bool,
      *  ...
-     * } $defaultOptions
+     * } $options
      */
-    public function __construct(private readonly string $authenticator, array $defaultOptions = [])
+    public function __construct(private readonly string $authenticator, array $options = [])
     {
-        $this->options = array_merge($this->options, $defaultOptions);
+        $this->options = array_merge($this->options, $options);
     }
 
     public function getPriority(): int

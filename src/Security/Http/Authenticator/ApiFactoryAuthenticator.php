@@ -61,7 +61,8 @@ abstract class ApiFactoryAuthenticator extends AbstractAuthenticator implements 
      *  failure_path: string,
      *  code_parameter: string,
      *  state_parameter: string,
-     *  state_enabled: bool
+     *  state_enabled: bool,
+     *  ...
      * }
      */
     protected array $options = [

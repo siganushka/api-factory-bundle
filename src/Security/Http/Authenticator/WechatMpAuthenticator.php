@@ -11,6 +11,10 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class WechatMpAuthenticator extends ApiFactoryAuthenticator
 {
+    public const AUTHORIZE_OPTIONS = [
+        'scope' => null,
+    ];
+
     private readonly Client $client;
 
     public function __construct(Configuration $configuration, Client $client)
@@ -20,7 +24,12 @@ class WechatMpAuthenticator extends ApiFactoryAuthenticator
 
     protected function createEntryPointResponse(string $redirectUri): RedirectResponse
     {
-        $authorizeUrl = $this->client->getRedirectUrl(['redirect_uri' => $redirectUri]);
+        $options = [
+            'redirect_uri' => $redirectUri,
+            ...array_intersect_key($this->options, self::AUTHORIZE_OPTIONS),
+        ];
+
+        $authorizeUrl = $this->client->getRedirectUrl($options);
 
         return new RedirectResponse($authorizeUrl);
     }
