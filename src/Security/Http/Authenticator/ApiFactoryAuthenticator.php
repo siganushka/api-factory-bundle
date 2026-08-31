@@ -125,7 +125,7 @@ abstract class ApiFactoryAuthenticator extends AbstractAuthenticator implements 
         $response = $this->createAuthenticationSuccessResponse($request, $token, $firewallName);
 
         $event = new AuthenticationSuccessEvent($request, $response, $token);
-        $this->eventDispatcher->dispatch($event, AuthenticationSuccessEvent::getAuthenticator(static::class));
+        $this->eventDispatcher->dispatch($event, AuthenticationSuccessEvent::getName(static::class));
 
         return $event->getResponse();
     }
@@ -135,7 +135,7 @@ abstract class ApiFactoryAuthenticator extends AbstractAuthenticator implements 
         $response = $this->createAuthenticationFailureResponse($request, $exception);
 
         $event = new AuthenticationFailureEvent($request, $response, $exception);
-        $this->eventDispatcher->dispatch($event, AuthenticationFailureEvent::getAuthenticator(static::class));
+        $this->eventDispatcher->dispatch($event, AuthenticationFailureEvent::getName(static::class));
 
         return $event->getResponse();
     }

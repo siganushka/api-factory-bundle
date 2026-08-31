@@ -23,8 +23,8 @@ class AuthenticationFailureEvent extends AuthenticationEvent
         return $this->exception;
     }
 
-    public static function getAuthenticator(string $authenticator): string
+    public static function getName(string $authenticatorFqcn): string
     {
-        return \sprintf('%s.authentication_failure', $authenticator);
+        return \sprintf('%s.authentication_failure', $authenticatorFqcn);
     }
 }

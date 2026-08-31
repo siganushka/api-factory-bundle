@@ -23,8 +23,8 @@ class AuthenticationSuccessEvent extends AuthenticationEvent
         return $this->token;
     }
 
-    public static function getAuthenticator(string $authenticator): string
+    public static function getName(string $authenticatorFqcn): string
     {
-        return \sprintf('%s.authentication_success', $authenticator);
+        return \sprintf('%s.authentication_success', $authenticatorFqcn);
     }
 }
