@@ -162,12 +162,10 @@ abstract class ApiFactoryAuthenticator extends AbstractAuthenticator implements 
 
     protected function createUserLoader(string $userIdentifier, array $attributes): ?UserInterface
     {
-        $arguments = $this->userProvider instanceof AttributesBasedUserProviderInterface
-            ? [$userIdentifier, $attributes]
-            : [$userIdentifier];
-
         try {
-            return $this->userProvider->loadUserByIdentifier(...$arguments);
+            return $this->userProvider instanceof AttributesBasedUserProviderInterface
+                ? $this->userProvider->loadUserByIdentifier($userIdentifier, $attributes)
+                : $this->userProvider->loadUserByIdentifier($userIdentifier);
         } catch (UserNotFoundException) {
             return $this->userPersister->persist($userIdentifier, $attributes);
         }
